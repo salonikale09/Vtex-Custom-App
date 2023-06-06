@@ -1,14 +1,18 @@
 {
   "name": "vtex-custom-app",
   "version": "0.1.0",
+  "proxy": "http://localhost:3000",
   "private": true,
   "dependencies": {
     "@contentful/app-sdk": "^4.17.2",
     "@contentful/f36-components": "4.41.1",
     "@contentful/f36-tokens": "4.0.1",
     "@contentful/react-apps-toolkit": "1.2.15",
+    "contentful": "^10.2.3",
     "contentful-management": "10.35.6",
     "emotion": "10.0.27",
+    "express": "^4.18.2",
+    "node-fetch": "^3.3.1",
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-scripts": "5.0.1"
