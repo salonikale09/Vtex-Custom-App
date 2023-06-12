@@ -3,19 +3,18 @@ import { Paragraph, Radio } from '@contentful/f36-components';
 import { DialogAppSDK } from '@contentful/app-sdk';
 import { useAutoResizer, useSDK } from '@contentful/react-apps-toolkit';
 import axios from 'axios';
+import UpdateVtexProduct from '../locations/UpdateVtexProduct'
 
 const ProductDialog = () => {
   const sdk = useSDK<DialogAppSDK>();
   useAutoResizer();
 
   const [skuAllArray, setSkuAllArray] = useState<any[]>([]);
-
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [currentPage, setCurrentPage] = useState<number>(1);
 
-  console.log(skuAllArray, 'skuAllArray');
 
   const productsPerPage = 10;
   const totalPages = Math.ceil(skuAllArray.length / productsPerPage);
@@ -51,13 +50,15 @@ const ProductDialog = () => {
             skuId: sku.itemId,
             brandId: item.brandId,
             categoryId: item.categoryId,
-            productId:item.productId,
-            productName:item.productName
+            productId: item.productId,
+            productName: item.productName,
+            imageUrl:item.items[0].images[0].imageUrl
           });
         });
       });
 
       setSkuAllArray(skuAllArray);
+      console.log(skuAllArray,'skuAllArray')
     } catch (error) {
       // Handle errors
       console.error(error);
@@ -67,6 +68,7 @@ const ProductDialog = () => {
   useEffect(() => {
     getVtexProducts();
   }, []);
+
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -122,12 +124,14 @@ const ProductDialog = () => {
             {currentProducts.map((item: any, index: number) => (
               <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
                 <Paragraph>
-                <hr/>
-                  <strong>SKU ID:</strong> {item.skuId}{' '}
-                  <strong>Brand ID:</strong> {item.brandId}{' '}
-                  <strong>Category ID:</strong> {item.categoryId}
-                  <strong>Product ID:</strong> {item.productId}
-                  <strong>Name :</strong> {item.productName}
+                  <hr />
+                  <strong>SKU ID:</strong> {item.skuId}{' '}<br/>
+                  {/* <strong>Brand ID:</strong> {item.brandId}{' '}
+                  <strong>Category ID:</strong> {item.categoryId}{' '} */}
+                  <strong>Product ID:</strong> {item.productId}{' '} 
+                  <strong> <img style={{ height: '50px', width: '50px' }} src={item.imageUrl}/> </strong>{' '}
+                  <strong>Name :</strong> {item.productName}{' '}
+                  
 
                 </Paragraph>
                 <Radio
@@ -135,7 +139,7 @@ const ProductDialog = () => {
                   onChange={() => handleRadioChange(item.skuId)}
                   style={{ marginLeft: '16px' }}
                 >
-                  Select
+
                 </Radio>
               </div>
             ))}
@@ -162,6 +166,7 @@ const ProductDialog = () => {
             )}
 
             <button onClick={handleDialogClose}>Close</button>
+            <UpdateVtexProduct />
           </div>
         </div>
       )}
