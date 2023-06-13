@@ -13,13 +13,6 @@ const UpdateVtexProduct: React.FC = () => {
     skuVideos:string;
   }[]>([]);
 
-  const [updatedSkuFromContentfulVideos, setUpdatedSkuFromContentfulVideos] = useState<{
-    skuId: string;
-    imageUrl: string;
-    brandId:string;
-    categoryId:string;
-    skuVideos:string;
-  }[]>([]);
   
 
   // console.log(allcontent, 'allcontent');
@@ -129,6 +122,7 @@ const UpdateVtexProduct: React.FC = () => {
               Text: product.imageUrl[i].fileName,
               Url: product.imageUrl[i].url
             };
+            console.log(imgRequestBody,'imgRequestBody')
             await fetch(`https://skillnet.vtexcommercestable.com.br/api/catalog/pvt/stockkeepingunit/${product.skuId}/file/${fileArrayData[i].fileId}`, {
               method: 'PUT',
               headers: {
@@ -146,35 +140,6 @@ const UpdateVtexProduct: React.FC = () => {
     
 
     
-      await Promise.all(
-        updatedSkuFromContentfulVideos.map(async (product: any, index: number) => {
-          const videoRequestBody = {
-            categoryId: product.categoryIdConfirm,
-            brandId: product.brandIdConfirm,
-            productId: product.productIdConfirm,
-            skuName: product.skuName,
-            Videos: product.skuImageCollection.items[0],
-            IsActive: product.isActive,
-            SkuData: updatedSkuFromContentful[index],
-            fileArrayData: fileArrayData[index],
-          };
-          console.log(videoRequestBody, 'videoRequestBody');
-          
-          // Execute the API call only if the skuId matches
-          await fetch(`https://skillnet.vtexcommercestable.com.br/api/catalog/pvt/stockkeepingunit/${product.skuIdConfirm}`, {
-            method: 'PUT',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json',
-              'X-VTEX-API-AppKey': 'vtexappkey-skillnet-VOZXMR',
-              'X-VTEX-API-AppToken': 'RVXQMZYNRRZNTMEURBRBHPRCWYMITOEUNUPISMZTCCAGROZIUTHBZFUCZKIVIWSHJPAREKDSZSKDTFKGQZHNBKKXLIANVJLFBTJJBUWJJNDQTJVQKXLOKCMFYHWORAVT',
-            },
-            body: JSON.stringify(videoRequestBody),
-          });
-    
-          console.log('Product updated:', product.skuIdConfirm);
-        })
-      );
     }
     catch (error) {
       console.error('Error updating product on VTEX:', error);
@@ -196,7 +161,7 @@ const UpdateVtexProduct: React.FC = () => {
 
   return (
     <>
-      <h6>hiiii</h6>
+      <h6></h6>
     </>
   );
 };

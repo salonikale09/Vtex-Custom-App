@@ -3,13 +3,17 @@ import { Paragraph, Radio } from '@contentful/f36-components';
 import { DialogAppSDK } from '@contentful/app-sdk';
 import { useAutoResizer, useSDK } from '@contentful/react-apps-toolkit';
 import axios from 'axios';
-import UpdateVtexProduct from '../locations/UpdateVtexProduct'
+import UpdateVtexProduct from '../locations/UpdateVtexProduct';
+import { Modal, Button, Heading } from '@contentful/f36-components';
+import './styles.css'
+
 
 const ProductDialog = () => {
   const sdk = useSDK<DialogAppSDK>();
   useAutoResizer();
 
   const [skuAllArray, setSkuAllArray] = useState<any[]>([]);
+  const [isShown, setShown] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedProduct, setSelectedProduct] = useState<string>('');
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
@@ -52,13 +56,13 @@ const ProductDialog = () => {
             categoryId: item.categoryId,
             productId: item.productId,
             productName: item.productName,
-            imageUrl:item.items[0].images[0].imageUrl
+            imageUrl: item.items[0].images[0].imageUrl
           });
         });
       });
 
       setSkuAllArray(skuAllArray);
-      console.log(skuAllArray,'skuAllArray')
+      console.log(skuAllArray, 'skuAllArray')
     } catch (error) {
       // Handle errors
       console.error(error);
@@ -73,6 +77,10 @@ const ProductDialog = () => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+
+  function handleSearchTerm(id:any){
+    setSearchTerm(id)
+  }
 
   const handleRadioChange = (skuId: string) => {
     setSelectedProduct(skuId);
@@ -96,21 +104,17 @@ const ProductDialog = () => {
     setCurrentPage(page);
   };
 
-  const handleDialogOpen = () => {
-    setIsDialogOpen(true);
-  };
-
-  const handleDialogClose = () => {
-    setIsDialogOpen(false);
-  };
-
   return (
-    <>
-      <button onClick={handleDialogOpen}>Select Product</button>
-      <input value={selectedProduct}></input>
+    <><Button onClick={() => setShown(true)}>Open modal</Button>
 
-      {isDialogOpen && (
-        <div>
+      <Modal onClose={() => setShown(false)} isShown={isShown}>
+        <Modal.Header
+          title="Select a Product variant"
+          // subtitle="GET"
+          onClose={() => setShown(false)}
+        />
+        <Modal.Content>
+        <div className="product-list">
           <div className="dialog-overlay" />
           <div className="dialog-content">
             <input
@@ -121,28 +125,32 @@ const ProductDialog = () => {
               style={{ marginBottom: '16px' }}
             />
 
+    <div className='secret-source'>
             {currentProducts.map((item: any, index: number) => (
-              <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+              <div key={index} style={{ display: 'inline-flex', alignItems: 'center' }}>
                 <Paragraph>
                   <hr />
-                  <strong>SKU ID:</strong> {item.skuId}{' '}<br/>
+                  <strong>SKU ID:</strong> {item.skuId}{' '}<br />
                   {/* <strong>Brand ID:</strong> {item.brandId}{' '}
                   <strong>Category ID:</strong> {item.categoryId}{' '} */}
-                  <strong>Product ID:</strong> {item.productId}{' '} 
-                  <strong> <img style={{ height: '50px', width: '50px' }} src={item.imageUrl}/> </strong>{' '}
+                  <strong>Product ID:</strong> {item.productId}{' '}
+                  <strong> <img style={{ height: '50px', width: '50px' }} src={item.imageUrl} /> </strong>{' '}
                   <strong>Name :</strong> {item.productName}{' '}
-                  
+
 
                 </Paragraph>
                 <Radio
                   isChecked={selectedProduct === item.skuId}
                   onChange={() => handleRadioChange(item.skuId)}
+                  onClick={()=>{handleSearchTerm(item.skuId)}}
                   style={{ marginLeft: '16px' }}
                 >
 
                 </Radio>
               </div>
+              
             ))}
+            </div>
 
             {currentProducts.length === 0 && (
               <Paragraph>No products found.</Paragraph>
@@ -164,12 +172,11 @@ const ProductDialog = () => {
                 ))}
               </div>
             )}
-
-            <button onClick={handleDialogClose}>Close</button>
             <UpdateVtexProduct />
           </div>
         </div>
-      )}
+        </Modal.Content>
+      </Modal>
     </>
   );
 };
