@@ -4,7 +4,6 @@ import { Heading, Form, Paragraph, Flex, FormControl, TextInput, Grid } from '@c
 import { css } from 'emotion';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 
-
 export interface AppInstallationParameters {
   'X-VTEX-API-AppKey': string;
   'X-VTEX-API-AppToken': string;
@@ -47,8 +46,9 @@ const ConfigScreen = () => {
   const limit = 20;
 
   const saveConfiguration = async () => {
-    const apiUrl = `https://api.contentful.com/spaces/${process.env.REACT_APP_SPACE_ID}/environments/${process.env.REACT_APP_ENVIRONMENT_ID}/app_installations/64K57K80SNwbR9TvDKR1pO`;
-    const authToken = process.env.REACT_APP_AUTH_TOKEN;
+    const apiUrl = 'https://api.contentful.com/spaces/b7hw33ucy3y5/environments/master/app_installations/2G8AhUS14mq2vtQJgmPw0C';
+    const authToken = 'CFPAT-bOIPI7Vx0IAM5p71TiciS2iSktpRdrTnmiIoGQUWkA4';
+
     const headers = {
       Authorization: `Bearer ${authToken}`,
       'Content-Type': 'application/vnd.contentful.management.v1+json',
@@ -127,19 +127,10 @@ const ConfigScreen = () => {
               }))
             }
           />
-        </FormControl>
-
-        <FormControl>
-          <FormControl.Label isRequired>Vtex Hostname</FormControl.Label>
-          <TextInput
-            value={parameters['vtexHostname']}
-            onChange={(e) =>
-              setParameters((prevParams) => ({
-                ...prevParams,
-                'vtexHostname': e.target.value,
-              }))
-            }
-          />
+          <Grid columns="auto 80px">
+            <FormControl.HelpText>The Vtex API endpoint</FormControl.HelpText>
+            <FormControl.Counter />
+          </Grid>
         </FormControl>
       </div>
     </Flex>
