@@ -25,15 +25,15 @@ const UpdateVtexProduct: React.FC = () => {
 
       try {
         const response = await axios.post(
-            'https://graphql.contentful.com/content/v1/spaces/5otptayivfvi/environments/master?access_token=U9-gR7JYR8FuL32S0pr8KADHRNdfSWKL80cr4Hmtbts',
+            'https://graphql.contentful.com/content/v1/spaces/cp3b8ygfr8vj/environments/master?access_token=han2JFRAHW29fPTXp-2tIonLLKQicrfxfH6rFW-f9oY',
             {
             query: `
             query {
-              bannerVtexCollection {
+              connectorCollection {
                 items {
                   productId
                   skuIdConfirm
-                  contentSlotImageVideoCollection(limit: 10) {
+                  contentSlotBannerVideoCollection(limit: 10) {
                     items {
                       url
                     }
