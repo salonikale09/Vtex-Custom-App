@@ -3,6 +3,7 @@ import { Button, TextInput } from '@contentful/f36-components';
 import { useFieldValue, useSDK } from '@contentful/react-apps-toolkit';
 import Dialog from './Dialog';
 import './contentful.css';
+import UpdateVtexProduct from '../locations/UpdateVtexProduct';
 
 
 const Field = () => {
@@ -29,6 +30,7 @@ const Field = () => {
     <>
       <TextInput value={value as any} onChange={(e) => setValue(e.target.value)} />
       <Button onClick={handleDialogOpen}>Search Product</Button>
+      <div><UpdateVtexProduct/></div>
       {isDialogOpen && <Dialog onClose={handleDialogClose} onProductSelect={handleProductSelect} />}
       {selectedProduct && (
         <div className="selected-product">
@@ -37,6 +39,7 @@ const Field = () => {
         <p className="product-id">Product ID: {selectedProduct.id}</p>
         <p className="sku-ids">SKU IDs: {selectedProduct.skuIds.join(', ')}</p>
       </div>
+      
       )}
     </>
   );

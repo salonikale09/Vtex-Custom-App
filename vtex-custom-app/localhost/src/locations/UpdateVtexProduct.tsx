@@ -50,11 +50,11 @@ const UpdateVtexProduct: React.FC = () => {
           }
         );
 
-        const items = response.data.data.vtexConnectorCollection.items;
+        const items = response.data.data.connectorCollection.items;
         
         const updatedSkuFromContentful = items.map((item: any) => ({
           skuId: item.skuIdConfirm,
-          imageUrl: item.contentSlotImageVideoCollection.items,
+          imageUrl: item.contentSlotBannerVideoCollection.items,
         //   contentSlotImage:item.skuImageCollection.items,
         //   productId: item.productId
 
