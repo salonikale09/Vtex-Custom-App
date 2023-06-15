@@ -4,20 +4,21 @@ import { Heading, Form, Paragraph, Flex, FormControl, TextInput, Grid } from '@c
 import { css } from 'emotion';
 import { /* useCMA, */ useSDK } from '@contentful/react-apps-toolkit';
 
+
 export interface AppInstallationParameters {
   'X-VTEX-API-AppKey': string;
   'X-VTEX-API-AppToken': string;
+  'vtexHostname': string
 }
 
 const ConfigScreen = () => {
   const [parameters, setParameters] = useState<AppInstallationParameters>({
     'X-VTEX-API-AppKey': '',
     'X-VTEX-API-AppToken': '',
+    'vtexHostname': ''
   });
   const sdk = useSDK<ConfigAppSDK>();
   // const cma = useCMA();
-
-  console.log()
   const onConfigure = useCallback(async () => {
     const currentState = await sdk.app.getCurrentState();
 
@@ -46,18 +47,19 @@ const ConfigScreen = () => {
   const limit = 20;
 
   const saveConfiguration = async () => {
-    const apiUrl = 'https://api.contentful.com/spaces/b7hw33ucy3y5/environments/master/app_installations/2G8AhUS14mq2vtQJgmPw0C';
-    const authToken = 'CFPAT-bOIPI7Vx0IAM5p71TiciS2iSktpRdrTnmiIoGQUWkA4';
-
+    const apiUrl = `https://api.contentful.com/spaces/${process.env.REACT_APP_SPACE_ID}/environments/${process.env.REACT_APP_ENVIRONMENT_ID}/app_installations/64K57K80SNwbR9TvDKR1pO`;
+    const authToken = process.env.REACT_APP_AUTH_TOKEN;
     const headers = {
       Authorization: `Bearer ${authToken}`,
       'Content-Type': 'application/vnd.contentful.management.v1+json',
     };
 
+
     const body = {
       parameters: {
         'X-VTEX-API-AppKey': parameters['X-VTEX-API-AppKey'],
         'X-VTEX-API-AppToken': parameters['X-VTEX-API-AppToken'],
+        'vtexHostname': parameters['vtexHostname']
       },
     };
 
@@ -95,7 +97,7 @@ const ConfigScreen = () => {
           <Paragraph>Welcome to your Contentful app. This is your config page.</Paragraph>
         </div>
         <hr />
-        <h3>{process.env.REACT_APP_ENVIRONMENT_ID}</h3>
+        <h3>Configuration</h3>
         <h5>Storefront Access Token</h5>
         <FormControl>
           <FormControl.Label isRequired>X-VTEX-API-AppKey</FormControl.Label>
@@ -125,10 +127,19 @@ const ConfigScreen = () => {
               }))
             }
           />
-          <Grid columns="auto 80px">
-            <FormControl.HelpText>The Vtex API endpoint</FormControl.HelpText>
-            <FormControl.Counter />
-          </Grid>
+        </FormControl>
+
+        <FormControl>
+          <FormControl.Label isRequired>Vtex Hostname</FormControl.Label>
+          <TextInput
+            value={parameters['vtexHostname']}
+            onChange={(e) =>
+              setParameters((prevParams) => ({
+                ...prevParams,
+                'vtexHostname': e.target.value,
+              }))
+            }
+          />
         </FormControl>
       </div>
     </Flex>

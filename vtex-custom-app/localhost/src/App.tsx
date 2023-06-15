@@ -3,7 +3,7 @@ import { locations } from '@contentful/app-sdk';
 import ConfigScreen from './locations/ConfigScreen';
 import Field from './locations/Field';
 import EntryEditor from './locations/EntryEditor';
-import Dialog from './locations/Dialog';
+import Dialog, { DialogProps } from './locations/Dialog';
 import Sidebar from './locations/Sidebar';
 import Page from './locations/Page';
 import Home from './locations/Home';
@@ -22,12 +22,13 @@ const ComponentLocationSettings = {
 const App = () => {
   const sdk = useSDK();
 
-  const Component = useMemo(() => {
+  const Component = useMemo<React.FC<Partial<DialogProps>> | null>(() => {
     for (const [location, component] of Object.entries(ComponentLocationSettings)) {
       if (sdk.location.is(location)) {
-        return component;
+        return component as React.FC<Partial<DialogProps>>;
       }
     }
+    return null;
   }, [sdk.location]);
 
   return Component ? <Component /> : null;

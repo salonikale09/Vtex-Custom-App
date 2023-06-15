@@ -1,0 +1,16 @@
+.selected-product {
+    background-color: #f2f2f2;
+    padding: 10px;
+    border: 1px solid #ccc;
+    margin-top: 10px;
+  }
+  
+  .product-name {
+    margin-bottom: 5px;
+  }
+  
+  .product-id,
+  .sku-ids {
+    margin-bottom: 3px;
+  }
+  
