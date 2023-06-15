@@ -4,11 +4,17 @@ import { useAutoResizer, useSDK } from '@contentful/react-apps-toolkit';
 import axios from 'axios';
 
 export interface DialogProps {
+  parameters: {
+    'X-VTEX-API-AppKey': string;
+    'X-VTEX-API-AppToken': string;
+    'vtexHostname': string
+  };
   onClose: () => void;
   onProductSelect: (product: { name: string; id: string; skuIds: string[] }) => void;
+  
 }
 
-const Dialog: React.FC<DialogProps> = ({ onClose, onProductSelect }) => {
+const Dialog: React.FC<DialogProps> = ({ parameters, onClose, onProductSelect }) => {
   const sdk = useSDK();
   useAutoResizer();
 
@@ -17,23 +23,26 @@ const Dialog: React.FC<DialogProps> = ({ onClose, onProductSelect }) => {
   const [skuIdsArray, setSkuIdsArray] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
+
+// Getting products from VTEX
   const getVtexProductId = async () => {
-    const apiKey = 'vtexappkey-skillnet-VOZXMR';
-    const apiSecret = 'RVXQMZYNRRZNTMEURBRBHPRCWYMITOEUNUPISMZTCCAGROZIUTHBZFUCZKIVIWSHJPAREKDSZSKDTFKGQZHNBKKXLIANVJLFBTJJBUWJJNDQTJVQKXLOKCMFYHWORAVT';
-    const baseUrl = 'https://skillnet.vtexcommercestable.com.br';
+    const { 'X-VTEX-API-AppKey': appKey, 'X-VTEX-API-AppToken': appToken, 'vtexHostname': vtexUrl } = parameters;
+    console.log('-appKey-',appKey,'-appToken-',appToken,'-vtexUrl-',vtexUrl);
+    
+    const baseUrl = `https://${vtexUrl}.vtexcommercestable.com.br`;
     const endpoint = '/api/catalog_system/pub/products/search?_from=1&_to=50';
 
     const headers = {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      Authorization: `Basic ${btoa(`${apiKey}:${apiSecret}`)}`,
+      Authorization: `Basic ${btoa(`${appKey}:${appToken}`)}`,
     };
 
     try {
       const response = await axios.get(`${baseUrl}${endpoint}`, { headers });
       const data = response.data;
 
-      console.log(data, "salonidata");
+      console.log(data, "vtexappdata");
       const storeArray: any[] = [];
       const nameArray: any[] = [];
       const skuIdsArray: any[] = [];
@@ -58,8 +67,13 @@ const Dialog: React.FC<DialogProps> = ({ onClose, onProductSelect }) => {
   };
 
   useEffect(() => {
-    getVtexProductId();
+    getVtexProductId()
   }, []);
+
+  // useEffect(() => {
+  //   fetchAppConfiguration();();
+    
+  // }, [parameters]);
 
   const handleSelectProduct = (productName: string) => {
     const productIndex = nameArray.findIndex((name) => name === productName);
