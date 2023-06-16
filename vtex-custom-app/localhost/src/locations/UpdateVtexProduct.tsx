@@ -1,21 +1,30 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const UpdateVtexProduct: React.FC = () => {
+export interface UpdateProductsProps {
+  parameters: {
+    'X-VTEX-API-AppKey': string;
+    'X-VTEX-API-AppToken': string;
+    'vtexHostname': string
+  };
+}
+
+const UpdateVtexProduct: React.FC<UpdateProductsProps> = ({ parameters }) => {
+  const { 'X-VTEX-API-AppKey': appKey, 'X-VTEX-API-AppToken': appToken, 'vtexHostname': vtexUrl } = parameters;
   // const [allcontent, setAllcontent] = useState<any[]>([]);
   const [fileArrayData, setFileArrayData] = useState<any[]>([]);
   // const [isLoading, setIsLoading] = useState(false);
   const [updatedSkuFromContentful, setUpdatedSkuFromContentful] = useState<{
     skuId: string;
     imageUrl: string;
-    brandId:string;
-    categoryId:string;
-    skuVideos:string;
+    brandId: string;
+    categoryId: string;
+    skuVideos: string;
   }[]>([]);
 
-  
 
-  // console.log(allcontent, 'allcontent');
+
+  console.log(parameters, 'parametersupdate');
   // console.log(fileArrayData, 'fileArrayData1');
 
   // Get contentful product data with skuid and images
@@ -25,8 +34,8 @@ const UpdateVtexProduct: React.FC = () => {
 
       try {
         const response = await axios.post(
-            'https://graphql.contentful.com/content/v1/spaces/cp3b8ygfr8vj/environments/master?access_token=han2JFRAHW29fPTXp-2tIonLLKQicrfxfH6rFW-f9oY',
-            {
+          `https://graphql.contentful.com/content/v1/spaces/${process.env.REACT_APP_SPACE_ID}/environments/${process.env.REACT_APP_ENVIRONMENT_ID}?access_token=${process.env.REACT_APP_ACCESS_TOKEN}`,
+          {
             query: `
             query {
               connectorCollection {
@@ -50,32 +59,37 @@ const UpdateVtexProduct: React.FC = () => {
           }
         );
 
-        const items = response.data.data.vtexConnectorCollection.items;
-        
+        const items = response.data.data.connectorCollection.items;
+
         const updatedSkuFromContentful = items.map((item: any) => ({
           skuId: item.skuIdConfirm,
-          imageUrl: item.contentSlotImageVideoCollection.items,
-        //   contentSlotImage:item.skuImageCollection.items,
-        //   productId: item.productId
+          imageUrl: item.contentSlotBannerVideoCollection.items,
+          //   contentSlotImage:item.skuImageCollection.items,
+          //   productId: item.productId
 
         }));
 
         const fileData: any[] = [];
         // get all the files ID
+        if(appToken && appKey){
         await Promise.all(
           items.map(async (product: any) => {
             console.log('step2 -get all the files ID');
-            const response = await fetch(`https://skillnet.vtexcommercestable.com.br/api/catalog/pvt/stockkeepingunit/${product.skuIdConfirm}/file`, {
-              method: 'GET',
-              headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-                'X-VTEX-API-AppKey': 'vtexappkey-skillnet-VOZXMR',
-                'X-VTEX-API-AppToken': 'RVXQMZYNRRZNTMEURBRBHPRCWYMITOEUNUPISMZTCCAGROZIUTHBZFUCZKIVIWSHJPAREKDSZSKDTFKGQZHNBKKXLIANVJLFBTJJBUWJJNDQTJVQKXLOKCMFYHWORAVT',
-              },
-            });
+            console.log(parameters,'parametersgetfile');
 
-            const responseData = await response.json();
+            const baseUrl = `https://${vtexUrl}.vtexcommercestable.com.br`;
+            const endpoint = `/api/catalog/pvt/stockkeepingunit/${product.skuIdConfirm}/file`;
+
+            const headers = {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              Authorization: `Basic ${btoa(`${appKey}:${appToken}`)}`,
+              'X-VTEX-API-AppKey': appKey,
+              'X-VTEX-API-AppToken': appToken
+            };
+
+            const response = await axios.get(`${baseUrl}${endpoint}`, { headers });
+            const responseData = response.data;
 
             responseData.forEach((item: any) => {
               fileData.push({
@@ -89,9 +103,11 @@ const UpdateVtexProduct: React.FC = () => {
           })
         );
 
+
         // setAllcontent(items);
         setUpdatedSkuFromContentful(updatedSkuFromContentful);
         console.log(updatedSkuFromContentful, 'updatedSkuFromContentful');
+        }
       } catch (error) {
         console.error('Error fetching blog data:', error);
       }
@@ -110,38 +126,37 @@ const UpdateVtexProduct: React.FC = () => {
     // setIsLoading(true);
 
     try {
-      
+
 
       //step-3- For Sending Image To BackOffice of Vtex
       await Promise.all(
-        updatedSkuFromContentful.map(async (product: any,index: number) => {
-          // if(product.imageUrl.length > fileArrayData.length){
+        updatedSkuFromContentful.map(async (product: any, index: number) => {
 
-          // }
           for (let i = 0; i < product.imageUrl.length; i++) {
-            console.log(product.imageUrl.length,fileArrayData,"product.imageUrl.length")
+            console.log(product.imageUrl.length, fileArrayData, "product.imageUrl.length")
             if (index <= fileArrayData.length) {
-            const imgRequestBody = {
-              IsMain: false,
-              Label: product.imageUrl[i].fileName,
-              Name: product.imageUrl[i].fileName,
-              Text: product.imageUrl[i].fileName,
-              Url: product.imageUrl[i].url
-            };
-            console.log(imgRequestBody,'imgRequestBody')
-            await fetch(`https://skillnet.vtexcommercestable.com.br/api/catalog/pvt/stockkeepingunit/${product.skuId}/file/${fileArrayData[i].fileId}`, {
-              method: 'PUT',
-              headers: {
-                Accept: 'application/json',
+              const imgRequestBody = {
+                IsMain: false,
+                Label: product.imageUrl[i].fileName,
+                Name: product.imageUrl[i].fileName,
+                Text: product.imageUrl[i].fileName,
+                Url: product.imageUrl[i].url
+              };
+              console.log(imgRequestBody, 'imgRequestBody')
+
+              const baseUrl = `https://${vtexUrl}.vtexcommercestable.com.br`;
+              const endpoint = `api/catalog/pvt/stockkeepingunit/${product.skuId}/file/${fileArrayData[i].fileId}`;
+
+              const headers = {
                 'Content-Type': 'application/json',
-                'X-VTEX-API-AppKey': 'vtexappkey-skillnet-VOZXMR',
-                'X-VTEX-API-AppToken': 'RVXQMZYNRRZNTMEURBRBHPRCWYMITOEUNUPISMZTCCAGROZIUTHBZFUCZKIVIWSHJPAREKDSZSKDTFKGQZHNBKKXLIANVJLFBTJJBUWJJNDQTJVQKXLOKCMFYHWORAVT',
-              },
-              body: JSON.stringify(imgRequestBody),
-            });
+                Accept: 'application/json',
+                Authorization: `Basic ${btoa(`${appKey}:${appToken}`)}`,
+              };
+
+              await axios.put(`${baseUrl}${endpoint}`, { headers, body: JSON.stringify(imgRequestBody) });
+            }
           }
-        }
-      })
+        })
       );
     }
     catch (error) {
@@ -152,9 +167,9 @@ const UpdateVtexProduct: React.FC = () => {
   };
 
 
-  
 
-  useEffect (()=>{
+
+  useEffect(() => {
     if (fileArrayData.length > 0) {
       updateVtexProduct(updatedSkuFromContentful, fileArrayData);
     }

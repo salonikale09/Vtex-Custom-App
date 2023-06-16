@@ -11,7 +11,6 @@ export interface DialogProps {
   };
   onClose: () => void;
   onProductSelect: (product: { name: string; id: string; skuIds: string[] }) => void;
-  
 }
 
 const Dialog: React.FC<DialogProps> = ({ parameters, onClose, onProductSelect }) => {
