@@ -10,6 +10,7 @@ const Field = () => {
   const sdk = useSDK();
   const [value, setValue] = useFieldValue();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isUpdate, setIsUpdate] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<{ name: string, id: string, skuIds: string[] } | null>(null);
 
   interface AppInstallationParameters {
@@ -48,6 +49,7 @@ const Field = () => {
           'X-VTEX-API-AppToken': appParameters['X-VTEX-API-AppToken'],
           'vtexHostname': appParameters['vtexHostname'],
         });
+        setIsUpdate(true)
       } else {
         // Handle error case
         console.error('Failed to fetch app configuration');
@@ -81,8 +83,10 @@ const Field = () => {
     <>
       <TextInput value={value as any} onChange={(e) => setValue(e.target.value)} />
       <Button onClick={handleDialogOpen}>Search Product</Button>
-      <div><UpdateVtexProduct parameters={parameters} /></div>
       {isDialogOpen && <Dialog parameters={parameters} onClose={handleDialogClose} onProductSelect={handleProductSelect} />}
+      { isUpdate &&
+      <UpdateVtexProduct parameters={parameters} />
+      }
       {selectedProduct && (
         <div className="selected-product">
           <h3>Product Information : </h3><br></br>

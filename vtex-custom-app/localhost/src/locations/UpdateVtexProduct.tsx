@@ -9,6 +9,7 @@ export interface UpdateProductsProps {
   };
 }
 const UpdateVtexProductFromContentful: React.FC<UpdateProductsProps> = ({ parameters }) => {
+  
   const { 'X-VTEX-API-AppKey': appKey, 'X-VTEX-API-AppToken': appToken, 'vtexHostname': vtexUrl } = parameters;
   const [fileArrayData, setFileArrayData] = useState<{ skuIdConfirm: string; fileId: string }[]>([]);
   const [updatedSkuFromContentful, setUpdatedSkuFromContentful] = useState<{
@@ -73,7 +74,7 @@ const UpdateVtexProductFromContentful: React.FC<UpdateProductsProps> = ({ parame
             const response = await axios.get(`${baseUrl}${endpoint}`, { headers });
             const responseData = response.data;
             console.log(responseData,'responseData')
-            responseData?.map((item:any,index:Number)=>{
+            responseData?.map((item:any)=>{
               console.log("hey",item.Id)
               fileData.push({
                 skuIdConfirm: item.SkuId,
@@ -108,23 +109,28 @@ const UpdateVtexProductFromContentful: React.FC<UpdateProductsProps> = ({ parame
             if (index <= fileArrayData.length) {
               const imgRequestBody = {
                 IsMain: false,
-                Name: product.skuId, // Use skuId as the Name
-                Text: product.skuId, // Use skuId as the Text
-                Url: product.imageUrl[i], // Use imageUrl directly
+                Name: product.skuId, 
+                Text: product.skuId, 
+                Label: product.skuId,
+                Url: product.imageUrl[i],
               };
 
               console.log(imgRequestBody,"imgRequestBody")
 
-              const baseUrl = `https://${vtexUrl}.vtexcommercestable.com.br`;
+              const baseUrl = `https://${vtexUrl}.vtexcommercestable.com.br/`;
               const endpoint = `api/catalog/pvt/stockkeepingunit/${product.skuId}/file/${fileArrayData[i].fileId}`;
 
               const headers = {
                 'Content-Type': 'application/json',
                 Accept: 'application/json',
-                Authorization: `Basic ${btoa(`${appKey}:${appToken}`)}`,
+                'X-VTEX-API-AppKey': appKey,
+                'X-VTEX-API-AppToken': appToken
               };
 
-              await axios.put(`${baseUrl}${endpoint}`, { headers, body: JSON.stringify(imgRequestBody) });
+              const response = await axios.put(`${baseUrl}${endpoint}`,JSON.stringify(imgRequestBody), { headers});
+
+              console.log('responseNew',response);
+              
             }
           }
         })
@@ -142,7 +148,7 @@ const UpdateVtexProductFromContentful: React.FC<UpdateProductsProps> = ({ parame
 
   return (
     <>
-      <h6>jii</h6>
+      <span style={{display:'none'}}>jii</span>
     </>
   );
 };
