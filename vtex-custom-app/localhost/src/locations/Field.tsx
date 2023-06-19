@@ -62,7 +62,14 @@ const Field = () => {
   };
 
   const handleDialogOpen = () => {
-    setIsDialogOpen(true);
+    if(isUpdate){
+      setIsDialogOpen(true);
+    }
+    else{
+      setTimeout(() => {
+        setIsDialogOpen(true)
+      }, 3000);
+    }
   };
 
   const handleDialogClose = () => {
